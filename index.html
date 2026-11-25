@@ -1,0 +1,443 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Inkling 2 Mini</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Concepto: cuaderno técnico en tinta azul. El hero muestra la malla de 264 celdas (parámetros), con 54 activas.
+   Después vienen las cifras en tarjetas de barras, la tabla de lo que no gana y la descarga con comandos copiables. */
+:root {
+  --paper: #EFF2F6;
+  --surface: #FFFFFF;
+  --ink: #0D1B2E;
+  --muted: #51607A;
+  --line: #D3DAE5;
+  --accent: #2338F0;
+  --accent-ink: #FFFFFF;
+  --rival: #9AA6BC;
+  --code-bg: #0D1B2E;
+  --code-fg: #E6ECF7;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0A1020;
+    --surface: #111A2E;
+    --ink: #E8EDF7;
+    --muted: #9AA7C0;
+    --line: #243251;
+    --accent: #8794FF;
+    --accent-ink: #0A1020;
+    --rival: #4A5878;
+    --code-bg: #060B17;
+    --code-fg: #DCE4F5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0A1020;
+  --surface: #111A2E;
+  --ink: #E8EDF7;
+  --muted: #9AA7C0;
+  --line: #243251;
+  --accent: #8794FF;
+  --accent-ink: #0A1020;
+  --rival: #4A5878;
+  --code-bg: #060B17;
+  --code-fg: #DCE4F5;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--font-body); }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+
+.wrap {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.eyebrow { font: 500 .75rem/1.4 var(--font-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+
+/* Barra superior */
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1.5rem; padding-block: 1.1rem; }
+.brand { font: 700 1.1rem var(--font-display); letter-spacing: -.01em; }
+.top nav { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; font-size: .9rem; }
+.top nav a { color: var(--ink); text-decoration: none; }
+.top nav a:hover { color: var(--accent); }
+
+/* Hero */
+.hero { display: grid; gap: 2.5rem; padding-block: 2.5rem 3.5rem; }
+.hero-text { display: grid; gap: 1.25rem; align-content: start; min-width: 0; }
+.hero h1 { font-size: clamp(2.2rem, 6.2vw, 4rem); font-weight: 800; line-height: 1.03; letter-spacing: -.025em; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 1.1rem; max-width: 36rem; color: var(--muted); }
+.lede strong { color: var(--ink); font-weight: 600; }
+.cta { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: .25rem; }
+.btn { display: inline-block; padding: .7rem 1.15rem; border-radius: 6px; font-weight: 600; text-decoration: none; border: 1.5px solid var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { color: var(--accent); }
+.btn:hover { filter: brightness(1.08); }
+
+.meshcard { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem; min-width: 0; align-self: start; }
+.mesh { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; }
+.mesh i { aspect-ratio: 1; background: var(--line); border-radius: 2px; display: block; }
+.mesh i.on { background: var(--accent); }
+.meshcap { margin-top: .9rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: .35rem 1rem; font: 400 .78rem/1.4 var(--font-mono); color: var(--muted); }
+.meshcap b { color: var(--ink); font-weight: 500; }
+
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 1.25rem 1.5rem; margin: 0; padding-top: 1.5rem; border-top: 1px solid var(--line); grid-column: 1 / -1; }
+.facts div { min-width: 0; }
+.facts dt { font: 500 .72rem/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: .2rem 0 0; font: 700 1.35rem/1.2 var(--font-display); }
+
+@media (min-width: 880px) {
+  .hero { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; }
+}
+
+/* Secciones */
+section { padding-block: 3.25rem; border-top: 1px solid var(--line); }
+section h2 { font-size: clamp(1.7rem, 4vw, 2.35rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin-top: .4rem; }
+.sec-lede { margin-top: .9rem; max-width: 44rem; color: var(--muted); }
+.sec-lede strong { color: var(--ink); font-weight: 600; }
+
+.score { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 1rem; margin-top: 1.75rem; }
+.score b { font: 800 clamp(3rem, 9vw, 5rem)/1 var(--font-display); letter-spacing: -.03em; color: var(--accent); font-variant-numeric: tabular-nums; }
+.score span { max-width: 30rem; color: var(--muted); }
+
+/* Barras */
+.bench { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 1rem; margin-top: 1.75rem; }
+.bcard { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.1rem 1.1rem; min-width: 0; display: grid; gap: .45rem; align-content: start; }
+.bcard h3 { font-size: 1.1rem; font-weight: 700; }
+.bk { font: 500 .7rem/1.4 var(--font-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.bd { font-size: .8rem; color: var(--muted); margin-bottom: .25rem; }
+.bar { display: grid; grid-template-columns: 9rem minmax(0, 1fr) 3rem; align-items: center; gap: .6rem; font-size: .82rem; }
+.bl { line-height: 1.2; color: var(--muted); min-width: 0; }
+.bl small { display: block; font-size: .72rem; }
+.bt { height: .7rem; background: var(--paper); border-radius: 2px; overflow: hidden; }
+.bt i { display: block; height: 100%; background: var(--rival); border-radius: 2px; }
+.bv { font: 400 .8rem var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
+.me .bl, .me .bv { color: var(--ink); font-weight: 600; }
+.me .bt i { background: var(--accent); }
+.big { gap: .9rem; }
+.big .bt { height: 1.1rem; }
+.big .bar { font-size: .92rem; grid-template-columns: 10rem minmax(0, 1fr) 3.4rem; }
+@media (max-width: 480px) {
+  .bar { grid-template-columns: 7.4rem minmax(0, 1fr) 2.8rem; gap: .5rem; }
+  .big .bar { grid-template-columns: 7.8rem minmax(0, 1fr) 3rem; }
+}
+
+/* Tabla */
+.tbl { margin-top: 1.5rem; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { text-align: left; padding: .7rem 1rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 500 .72rem/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+td.n { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.mine { color: var(--accent); font-weight: 600; }
+.note { margin-top: 1rem; font-size: .88rem; color: var(--muted); max-width: 44rem; }
+
+/* Eficiencia */
+.effcard { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1.25rem; margin-top: 1.75rem; display: grid; gap: 1rem; }
+.effcard .bk { margin-bottom: .1rem; }
+.callout { margin-top: 1.5rem; border-left: 3px solid var(--accent); padding: .2rem 0 .2rem 1rem; max-width: 44rem; }
+.callout strong { font-family: var(--font-display); font-size: 1.1rem; }
+.callout p + p { margin-top: .4rem; color: var(--muted); }
+
+/* Descarga */
+.dl { display: grid; gap: 1rem; margin-top: 1.75rem; }
+.blk { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1rem; min-width: 0; display: grid; gap: .75rem; }
+.blk-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
+.blk-head h3 { font-size: 1.05rem; font-weight: 700; }
+.copy { font: 500 .8rem var(--font-body); padding: .4rem .8rem; border-radius: 5px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+.copy:hover { border-color: var(--accent); color: var(--accent); }
+pre { margin: 0; background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: 6px; overflow-x: auto; font: 400 .82rem/1.55 var(--font-mono); }
+details summary { cursor: pointer; font-size: .9rem; color: var(--accent); font-weight: 500; }
+details pre { margin-top: .75rem; }
+.small { font-size: .88rem; color: var(--muted); }
+.reqs { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem 1.5rem; margin-top: 1.5rem; padding: 0; list-style: none; }
+.reqs li { min-width: 0; font-size: .92rem; }
+.reqs b { display: block; font: 500 .72rem/1.4 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: .15rem; }
+
+footer { border-top: 1px solid var(--line); padding-block: 2rem 3rem; font-size: .85rem; color: var(--muted); }
+footer p { max-width: 46rem; }
+footer p + p { margin-top: .5rem; }
+</style>
+
+<header class="wrap top">
+  <span class="brand">Inkling 2 Mini</span>
+  <nav aria-label="Secciones">
+    <a href="#rendimiento">Rendimiento</a>
+    <a href="#eficiencia">Eficiencia</a>
+    <a href="#descarga">Descarga</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div class="hero-text">
+      <p class="eyebrow">Modelo abierto · Apache-2.0 · Texto e imagen</p>
+      <h1>26,4B de parámetros. Solo <em>5,4B</em> trabajan en cada token.</h1>
+      <p class="lede">Inkling 2 Mini pesa unos 20 GB y se ejecuta en tu propio hardware. En la tabla de su ficha tiene la <strong>mejor puntuación de las cinco columnas en 32 de 47 pruebas</strong> (empates incluidos), con entre 2 y casi 6 veces menos parámetros activos que los demás.</p>
+      <div class="cta">
+        <a class="btn primary" href="#descarga">Descargar el modelo</a>
+        <a class="btn ghost" href="#rendimiento">Ver las cifras</a>
+      </div>
+    </div>
+    <div class="meshcard">
+      <div class="mesh" id="mesh" role="img" aria-label="Malla de 264 cuadrados, 54 resaltados: 5,4 de 26,4 miles de millones de parámetros activos"></div>
+      <p class="meshcap"><span><b>54</b> de 264 celdas activas</span><span>1 celda = 100 M de parámetros</span></p>
+    </div>
+    <dl class="facts">
+      <div><dt>Activos / totales</dt><dd>5,4B / 26,4B</dd></div>
+      <div><dt>En disco</dt><dd>20,2 GB</dd></div>
+      <div><dt>Precisión</dt><dd>8 bits (MXFP8)</dd></div>
+      <div><dt>Arquitectura</dt><dd>Mixture of Experts</dd></div>
+      <div><dt>Licencia</dt><dd>Apache-2.0</dd></div>
+    </dl>
+  </div>
+
+  <section id="rendimiento">
+    <div class="wrap">
+      <p class="eyebrow">Rendimiento</p>
+      <h2>Compite con modelos que activan muchos más parámetros</h2>
+      <p class="sec-lede">La comparación es con Qwen3.8-27B, Nemotron 3.5 Super VL, Muse Glimmer y Gemma 4 31B, que activan entre <strong>12B y 30,7B</strong> parámetros por token. Estas son ocho pruebas de programación, agentes y visión, todas en la misma escala de 0 a 100.</p>
+      <p class="score"><b>32 de 47</b><span>pruebas de la tabla en las que Inkling 2 Mini tiene la mejor puntuación (empates incluidos). En otras 11 es segundo.</span></p>
+      <div class="bench" id="bench"></div>
+
+      <h3 style="margin-top:3rem;font-size:1.35rem">Dónde no es el primero</h3>
+      <p class="note" style="margin-top:.5rem">Seis ejemplos de pruebas que gana otro modelo. En todos es Qwen3.8-27B, que activa 27B de parámetros frente a los 5,4B de Inkling.</p>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Prueba</th><th>Inkling 2 Mini</th><th>Mejor de la tabla</th></tr></thead>
+          <tbody>
+            <tr><td>Terminal Bench v2.1</td><td class="n mine">71,6 %</td><td class="n">73,0 %</td></tr>
+            <tr><td>GDPVal-AA v2.1</td><td class="n mine">1319</td><td class="n">1427</td></tr>
+            <tr><td>AA-Briefcase v1.1</td><td class="n mine">1263</td><td class="n">1391</td></tr>
+            <tr><td>AutomationBench-AA v1.0.6</td><td class="n mine">41,8 %</td><td class="n">48,2 %</td></tr>
+            <tr><td>MMMU Pro</td><td class="n mine">74,9 %</td><td class="n">76,3 %</td></tr>
+            <tr><td>AA-Omniscience, tasa de no alucinación</td><td class="n mine">63,4 %</td><td class="n">71,4 %</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="eficiencia">
+    <div class="wrap">
+      <p class="eyebrow">Eficiencia</p>
+      <h2>Inteligencia por vatio</h2>
+      <p class="sec-lede">Investigadores del Hazy Research Lab y del Scaling Intelligence Lab de Stanford probaron Inkling 2 Mini con acceso anticipado. Miden cuánta energía necesita un modelo por consulta para alcanzar cierto nivel de rendimiento. <strong>Una puntuación más alta es mejor.</strong></p>
+      <div class="effcard">
+        <p class="bk">Inteligencia por vatio (Stanford)</p>
+        <div class="big" id="eff" style="display:grid"></div>
+        <p class="small">Inkling 2 Mini corrió en una NVIDIA DGX Spark (128 GB) con precisión MXFP8 y esfuerzo de razonamiento bajo. Los demás corrieron en NVFP4 (Qwen3.6-35B-A3B y Gemma-4-26B-A4B) e INT4 (Qwen3.5-27B). Método: <a href="https://arxiv.org/abs/2511.07885" target="_blank" rel="noopener">Intelligence per Watt, Saad-Falcon y Narayan et al., 2025</a>.</p>
+      </div>
+      <div class="callout">
+        <p><strong>Varios agentes persistentes en un solo equipo.</strong></p>
+        <p>Los 20 habitantes de Thinkyville, un pueblo atento a su consumo de energía, los gestiona Inkling 2 Mini en un único MacBook sin conexión.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="descarga">
+    <div class="wrap">
+      <p class="eyebrow">Descarga</p>
+      <h2>Bájalo a tu máquina</h2>
+      <p class="sec-lede">Los pesos están en Hugging Face. Elige la vía que te venga mejor; todas descargan el repositorio completo y reanudan si se corta la conexión.</p>
+      <p class="cta" style="margin-top:1.25rem"><a class="btn primary" href="https://huggingface.co/thinkingmachines/Inkling-2-Mini" target="_blank" rel="noopener">Abrir en Hugging Face</a></p>
+      <ul class="reqs">
+        <li><b>Espacio</b>20,2 GB de pesos. Deja unos 25 GB libres por la caché.</li>
+        <li><b>Software</b>Python 3.9 o superior para las opciones de abajo.</li>
+        <li><b>Para ejecutarlo</b>Consulta el README del repositorio para el motor de inferencia y los requisitos exactos.</li>
+      </ul>
+
+      <div class="dl">
+        <div class="blk">
+          <div class="blk-head"><h3>Windows: script .bat</h3><button class="copy" type="button" data-copy="code-bat">Copiar script</button></div>
+          <p class="small">Guárdalo como <code>descargar_inkling2_mini.bat</code> y haz doble clic. Instala las dependencias y descarga el modelo en una carpeta junto al archivo.</p>
+          <details>
+            <summary>Ver el script</summary>
+<pre><code id="code-bat">@echo off
+setlocal
+
+REM ============================================================
+REM  Descarga thinkingmachines/Inkling-2-Mini (~20 GB) desde Hugging Face
+REM  Requisitos: Python 3.9+ en el PATH y ~25 GB libres en disco.
+REM  Si se corta, vuelve a ejecutarlo: reanuda lo ya descargado.
+REM ============================================================
+
+set "HF_REPO=thinkingmachines/Inkling-2-Mini"
+set "HF_DEST=%~dp0Inkling-2-Mini"
+
+REM Si el repo pidiera acceso, descomenta y pon tu token (https://huggingface.co/settings/tokens):
+REM set "HF_TOKEN=hf_xxxxxxxxxxxxxxxxxxxx"
+
+REM Opcional: cambiar la carpeta de cache si el disco C: es pequeno
+REM set "HF_HOME=D:\hf_cache"
+
+where python &gt;nul 2&gt;&amp;1
+if errorlevel 1 (
+    echo [ERROR] No se encuentra Python en el PATH. Instalalo desde https://www.python.org/downloads/
+    echo         y marca "Add Python to PATH" durante la instalacion.
+    pause
+    exit /b 1
+)
+
+echo.
+echo [1/2] Instalando/actualizando huggingface_hub y hf_xet...
+python -m pip install -U "huggingface_hub[cli]" hf_xet
+if errorlevel 1 (
+    echo [ERROR] Fallo al instalar las dependencias.
+    pause
+    exit /b 1
+)
+
+echo.
+echo [2/2] Descargando %HF_REPO% en:
+echo       %HF_DEST%
+echo.
+python -c "import os; from huggingface_hub import snapshot_download; snapshot_download(repo_id=os.environ['HF_REPO'], local_dir=os.environ['HF_DEST'])"
+if errorlevel 1 (
+    echo.
+    echo [ERROR] La descarga fallo. Comprueba tu conexion, el espacio en disco
+    echo         y, si el repo lo exige, el token. Vuelve a ejecutar para reanudar.
+    pause
+    exit /b 1
+)
+
+echo.
+echo [OK] Descarga completada: %HF_DEST%
+pause
+endlocal</code></pre>
+          </details>
+        </div>
+
+        <div class="blk">
+          <div class="blk-head"><h3>Línea de comandos</h3><button class="copy" type="button" data-copy="code-cli">Copiar comandos</button></div>
+          <pre><code id="code-cli">pip install -U "huggingface_hub[cli]" hf_xet
+hf download thinkingmachines/Inkling-2-Mini --local-dir ./Inkling-2-Mini</code></pre>
+          <p class="small">En versiones antiguas del cliente, el segundo comando es <code>huggingface-cli download</code> con los mismos argumentos.</p>
+        </div>
+
+        <div class="blk">
+          <div class="blk-head"><h3>Python</h3><button class="copy" type="button" data-copy="code-py">Copiar código</button></div>
+          <pre><code id="code-py">from huggingface_hub import snapshot_download
+
+snapshot_download(
+    repo_id="thinkingmachines/Inkling-2-Mini",
+    local_dir="./Inkling-2-Mini",
+)</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Página no oficial, hecha por la comunidad. No está afiliada a Thinking Machines Lab.</p>
+    <p>Las cifras proceden de la tabla de evaluación de la ficha del modelo en Hugging Face, consultada el 24 de noviembre de 2026, y esta página no las ha verificado por su cuenta. Comprueba la <a href="https://huggingface.co/thinkingmachines/Inkling-2-Mini" target="_blank" rel="noopener">ficha original</a> para ver los datos al día.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var fmt = function (v, d) { return v.toFixed(d).replace('.', ','); };
+
+  // Malla de 264 celdas con 54 activas, repartidas con un orden fijo
+  var mesh = document.getElementById('mesh');
+  var total = 264, active = 54, seed = 7;
+  var rnd = function () { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+  var idx = [];
+  for (var i = 0; i < total; i++) idx.push(i);
+  for (var k = total - 1; k > 0; k--) {
+    var j = Math.floor(rnd() * (k + 1));
+    var tmp = idx[k]; idx[k] = idx[j]; idx[j] = tmp;
+  }
+  var lit = {};
+  idx.slice(0, active).forEach(function (n) { lit[n] = true; });
+  var frag = document.createDocumentFragment();
+  for (var c = 0; c < total; c++) {
+    var cell = document.createElement('i');
+    if (lit[c]) cell.className = 'on';
+    frag.appendChild(cell);
+  }
+  mesh.appendChild(frag);
+
+  function bar(name, sub, v, max, me, label) {
+    return '<div class="bar' + (me ? ' me' : '') + '"><span class="bl">' + name +
+      (sub ? '<small>' + sub + '</small>' : '') +
+      '</span><span class="bt"><i style="width:' + (v / max * 100) + '%"></i></span><span class="bv">' + label + '</span></div>';
+  }
+
+  // Ocho pruebas. Orden de valores: Inkling 2 Mini, Qwen3.8-27B, Nemotron 3.5 Super VL, Muse Glimmer, Gemma 4 31B
+  var models = ['Inkling 2 Mini', 'Qwen3.8-27B', 'Nemotron 3.5 Super VL', 'Muse Glimmer', 'Gemma 4 31B'];
+  var bench = [
+    { c: 'Programación', n: 'SWE-bench Verified', d: 'Solo bash', v: [79.2, 77.8, 71.1, 76.0, 46.1] },
+    { c: 'Programación', n: 'SWE-bench Pro v2 (Hard)', d: 'mini-swe-agent v2.4.6', v: [77.9, 73.8, 44.1, 44.3, 14.2] },
+    { c: 'Programación', n: 'DeepSWE v1.1', d: 'mini-swe-agent v2.4.6', v: [48.2, 42.2, 24.7, 4.4, 0.3] },
+    { c: 'Agentes', n: 'BrowseComp', d: 'Con compactación de contexto', v: [79.0, 61.6, 78.9, 63.9, 37.0] },
+    { c: 'Agentes', n: 'DeepSearchQA', d: 'Con compactación de contexto', v: [85.3, 79.7, 77.7, 74.6, 61.7] },
+    { c: 'Agentes', n: 'MCP Atlas', d: 'Público', v: [82.7, 77.3, 67.7, 75.5, 54.2] },
+    { c: 'Visión', n: 'OmniDocBench v1.6', d: 'Lectura de documentos', v: [92.8, 91.5, 77.9, 90.4, 82.5] },
+    { c: 'Visión', n: 'ScreenSpot Pro', d: 'Versión original, sin Python', v: [76.5, 57.6, 43.5, 75.4, 5.9] }
+  ];
+  var host = document.getElementById('bench');
+  bench.forEach(function (b) {
+    var card = document.createElement('div');
+    card.className = 'bcard';
+    card.setAttribute('role', 'group');
+    card.setAttribute('aria-label', b.n);
+    var h = '<p class="bk">' + b.c + '</p><h3>' + b.n + '</h3><p class="bd">' + b.d + '</p>';
+    b.v.forEach(function (v, i) { h += bar(models[i], '', v, 100, i === 0, fmt(v, 1)); });
+    card.innerHTML = h;
+    host.appendChild(card);
+  });
+
+  // Inteligencia por vatio (Stanford)
+  var eff = [
+    ['Inkling 2 Mini', 'MXFP8', 0.703, true],
+    ['Qwen3.6-35B-A3B', 'NVFP4', 0.430, false],
+    ['Gemma-4-26B-A4B', 'NVFP4', 0.159, false],
+    ['Qwen3.5-27B', 'INT4', 0.036, false]
+  ];
+  var effHtml = '';
+  eff.forEach(function (e) { effHtml += bar(e[0], e[1], e[2], 0.703, e[3], fmt(e[2], 3)); });
+  document.getElementById('eff').innerHTML = effHtml;
+
+  // Botones de copiar
+  function flash(btn, text) {
+    var old = btn.getAttribute('data-label') || btn.textContent;
+    btn.setAttribute('data-label', old);
+    btn.textContent = text;
+    setTimeout(function () { btn.textContent = old; }, 2200);
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var el = document.getElementById(btn.getAttribute('data-copy'));
+      var text = el.textContent;
+      var fallback = function () {
+        var r = document.createRange();
+        r.selectNodeContents(el);
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+        flash(btn, 'Seleccionado: copia con Ctrl+C');
+      };
+      try {
+        navigator.clipboard.writeText(text).then(function () { flash(btn, 'Copiado'); }, fallback);
+      } catch (e) { fallback(); }
+    });
+  });
+})();
+</script>
+
+</body></html>
